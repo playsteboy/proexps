@@ -6,6 +6,14 @@
     "main"
   ],
   "permissions": [
-    "core:default"
+    "sql:default",
+    {
+      "identifier": "sql:allow-execute",
+      "allow": [{ "path": "proexps.db" }]
+    },
+    {
+      "identifier": "sql:default",
+      "allow": [{ "path": "proexps.db" }]
+    }
   ]
 }
