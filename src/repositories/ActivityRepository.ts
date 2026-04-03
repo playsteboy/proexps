@@ -13,12 +13,12 @@ async getActivities(): Promise<Activity[]> {
         const rows = await executeQuery<Record<string, any>[]>(query);
         if (!Array.isArray(rows)) return [];
         return rows.map((row) => new Activity(
-            row.id,
             row.name,
-            row.description,
-            row.money_in,
-            row.money_out,
-            row.date
+            row.description||"",
+            row.money_in||0,
+            row.money_out||0,
+            new Date(row.date),
+            row.id
             ));
     }catch(error){
         console.error("Error fetching activities:", error);

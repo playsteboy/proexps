@@ -1,45 +1,44 @@
-import React, { useEffect } from 'react';
-import useShowActivity from '../../hooks/useShowActivity';
-import useUpdateActivity from '../../hooks/useUpdateActivity';
-import ActivityCreator from './ActivityCreator';
-import Activity from '../../models/ActivityModel';
-export default function ActivityForm() {
-    const { show, activities, loading } = useShowActivity();
-    const [onEdit, setOnEdit] = React.useState(false);
-    const { updateActivity } = useUpdateActivity();
+import useCreateActivity from "../../hooks/useCreateActivity";
+import ActivityModel from "../../models/ActivityModel";
 
-    const handleActivityUpdate = async (activity: Activity) => {
-        await updateActivity(activity);
-        show();
-    }
+export default function ActivityForm({ onRefresh }: { onRefresh?: () => void }) {
+    const { saveActivity, loading } = useCreateActivity();
 
-    useEffect(() => { show(); }, []);
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const fd = new FormData(e.currentTarget);
+        
+        const name = fd.get("name") as string;
+        const description = (fd.get("description") as string) || "";
+        const moneyIn = parseFloat((fd.get("moneyIn") as string) || "0");
+        const moneyOut = parseFloat((fd.get("moneyOut") as string) || "0");
+        
+        const dateString = fd.get("date") as string;
+        const date = dateString ? new Date(dateString) : new Date();
+
+        const activity = new ActivityModel(
+            name, 
+            description,
+            moneyIn, 
+            moneyOut, 
+            date
+        );
+
+        await saveActivity(activity);
+        
+        if (onRefresh) {
+            onRefresh();
+        }
+    };
 
     return (
-        <div className='flex flex-col items-center gap-4'>
-            <h1>Activity List</h1>
-            {onEdit ? (
-                <ActivityCreator onRefresh={() => { setOnEdit(false); show(); }} />
-            ) : (
-                <button type='button' onClick={() => setOnEdit(true)} className="bg-yellow-400 text-white p-2 rounded">Add Activity</button>
-            )}
-
-            {/* Pas de <form> ici ! */}
-            <section className='w-full'>
-                {loading ? <p>Loading...</p> : (
-                    <ul className="gap-2 flex flex-col">
-                        {activities.map((activity) => (
-                            <li key={activity.getId()} className="flex gap-2">
-                                <input type="text" defaultValue={activity.getName()} placeholder="Activity Name"/>
-                                <input type="number" defaultValue={activity.getMoneyIn()} placeholder="Money In"/>
-                                <input type="number" defaultValue={activity.getMoneyOut()} placeholder="Money Out"/>
-                                <input type="date" defaultValue={activity.getDate()?.toString()} placeholder="Date"/>
-                                <button type='button' onClick={() => {handleActivityUpdate(activity)}}>Edit</button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </section>
-        </div>
+        <form onSubmit={handleSubmit} className=" gap-2 flex flex-col w-full">
+            <input type="text" name="name" placeholder="Activity Name" required className="border-2 border-gray-300 p-1 rounded" />
+            <input type="text" name="description" placeholder="Description" className="border-2 border-gray-300 p-1 rounded" />
+            <input type="number" name="moneyIn" placeholder="Money In" step="0.0" className="border-2 border-gray-300 p-1 rounded" />
+            <input type="number" name="moneyOut" placeholder="Money Out" step="0.0" className="border-2 border-gray-300 p-1 rounded" />
+            <input type="date" name="date" placeholder="Date" required className="border-2 border-gray-300 p-1 rounded" />
+            <button type="submit" disabled={loading} className="bg-blue-500 text-white p-2 rounded">Save</button>
+        </form>
     );
 }
