@@ -1,12 +1,10 @@
 import Database from "@tauri-apps/plugin-sql";
 import { appConfigDir } from '@tauri-apps/api/path';
 
-const path = await appConfigDir();
-
-console.log("Le dossier de ma base est ici :", path);
-
 export async function initializeDatabase() {
-  const db = await Database.load("proexps.db");
+  const path = await appConfigDir();
+  console.log("Database folder's path: ", path);
+  const db = await Database.load("sqlite:proexps.db");
   await db.execute(`CREATE TABLE IF NOT EXISTS activities (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,

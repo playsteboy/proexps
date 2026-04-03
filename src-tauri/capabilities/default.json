@@ -6,6 +6,9 @@
     "main"
   ],
   "permissions": [
+    "core:path:default",
+    "core:path:allow-resolve-directory",
+    "core:path:allow-is-absolute",
     "sql:default",
     {
       "identifier": "sql:allow-execute",

@@ -1,5 +1,7 @@
 import { useState , useEffect} from "react";
-export default function ProgressBar({width, height, bgColor, progressColor, progress}) {
+export default function ProgressBar({width, height, bgColor, progressColor, progress}:
+    {width: string, height: string, bgColor: string, progressColor: string, progress: number}
+) {
     const [fillWidth, setFillWidth] = useState(0);
     useEffect(() => {
         const timer = setTimeout(() => {

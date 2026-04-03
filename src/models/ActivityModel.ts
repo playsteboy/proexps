@@ -6,7 +6,7 @@ export default class ActivityModel {
     private moneyOut?:number;
     private date?:Date;
 
-    constructor(id:number, name:string, description:string, moneyIn:number, moneyOut:number, date:Date){
+    constructor(name:string, description:string, moneyIn:number, moneyOut:number, date:Date, id?:number) {
         this.id = id;
         this.name = name;
         this.description = description;

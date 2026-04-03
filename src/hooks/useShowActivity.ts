@@ -1,13 +1,14 @@
 import { useState } from "react";
 import activityService from "../services/ActivityService";
+import Activity from "../models/ActivityModel";
 export default function useShowActivity() {
-    const [activities, setActivities] = useState([]);
+    const [activities, setActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
 
     const show = async () => {
         setLoading(true);
         try {
-            const data = await activityService.getActivities();
+            const data: Activity[] = await activityService.getActivities();
             setActivities(data);
         } catch (error) {
             console.error("Error fetching activities:", error);

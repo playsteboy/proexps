@@ -1,19 +1,21 @@
 import ActivityRepository from '../repositories/ActivityRepository';
+import Activity from '../models/ActivityModel';
+import type { QueryResult } from "@tauri-apps/plugin-sql";
 class ActivityService {
-    #activityRepository;
-    constructor(activityRepository) {
+    private activityRepository: ActivityRepository;
+    constructor(activityRepository: ActivityRepository) {
         this.activityRepository = activityRepository;
     }
-    async getActivities() {
+    async getActivities(): Promise<Activity[]> {
         return await this.activityRepository.getActivities();
     }
-    async addActivity(activity) {
+    async addActivity(activity: Activity): Promise<QueryResult> {
         return await this.activityRepository.addActivity(activity);
     }
-    async updateActivity(activity) {
+    async updateActivity(activity: Activity): Promise<QueryResult> {
         return await this.activityRepository.updateActivity(activity);
     }
-    async deleteActivity(activityId) {
+    async deleteActivity(activityId: number): Promise<QueryResult> {
         return await this.activityRepository.deleteActivity(activityId);
     }
 }
