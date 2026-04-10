@@ -18,6 +18,16 @@ class ActivityService {
     async deleteActivity(activityId: number): Promise<QueryResult> {
         return await this.activityRepository.deleteActivity(activityId);
     }
+    async computeTotalMoneyLeft(): Promise<number> {
+        const activities = await this.getActivities();
+        return activities.reduce((total, activity) => {
+            const moneyIn = activity.getMoneyIn() || 0;
+            const moneyOut = activity.getMoneyOut() || 0;
+            return total + moneyIn - moneyOut;
+        }
+        , 0);
+    }
+        
 }
 const activityRepository = new ActivityRepository();
 const activityService = new ActivityService(activityRepository);

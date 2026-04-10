@@ -1,4 +1,6 @@
-export default function Header({title , bgColor}) {
+export default function Header({title , bgColor}:
+  {title: string, bgColor: string}
+) {
   return (
     <div className={`relative ${bgColor} transform skew-x-6 overflow-hidden w-1/2 h-28 flex items-center justify-center rounded-lg shadow-lg mt-10 text-[#F0F0F0]`}>
       <div className="transform -skew-x-6 p-10">

@@ -6,7 +6,13 @@ export default function useSaveActivity() {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const saveActivity = async (activity: Activity) => {
+    const saveActivity = async () => {
+        const activity: Activity = new Activity(
+            "",
+            0,
+            0,
+            new Date()
+        );
         setLoading(true);
         try {
             await activityService.addActivity(activity);

@@ -9,12 +9,11 @@ class ActivityRepository {
     }
 async getActivities(): Promise<Activity[]> {
     try{
-        const query = "SELECT id, name, description, money_in, money_out, date FROM activities";
+        const query = "SELECT id, name, money_in, money_out, date FROM activities";
         const rows = await executeQuery<Record<string, any>[]>(query);
         if (!Array.isArray(rows)) return [];
         return rows.map((row) => new Activity(
             row.name,
-            row.description||"",
             row.money_in||0,
             row.money_out||0,
             new Date(row.date),
@@ -28,10 +27,9 @@ async getActivities(): Promise<Activity[]> {
 
 async addActivity(activity: Activity): Promise<QueryResult>  {
     try{
-        const query = "INSERT INTO activities (name, description, money_in, money_out, date) VALUES (?, ?, ?, ?, ?)";
+        const query = "INSERT INTO activities (name, money_in, money_out, date) VALUES (?, ?, ?, ?)";
     const params = [
         activity.getName(), 
-        activity.getDescription(), 
         activity.getMoneyIn(), 
         activity.getMoneyOut(), 
         activity.getDate()];
@@ -44,10 +42,9 @@ async addActivity(activity: Activity): Promise<QueryResult>  {
 
 async updateActivity(activity: Activity): Promise<QueryResult> {
     try{
-        const query = "UPDATE activities SET name = ?, description = ?, money_in = ?, money_out = ?, date = ? WHERE id = ?";
+        const query = "UPDATE activities SET name = ?, money_in = ?, money_out = ?, date = ? WHERE id = ?";
     const params = [
         activity.getName(), 
-        activity.getDescription(), 
         activity.getMoneyIn(), 
         activity.getMoneyOut(), 
         activity.getDate(), 
