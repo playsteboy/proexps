@@ -1,5 +1,5 @@
 import Footer from '../../components/Layout/Footer'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useShowActivity from '../../hooks/useShowActivity';
 import useUpdateActivity from '../../hooks/useUpdateActivity';
 import Activity from '../../models/ActivityModel';
@@ -11,8 +11,8 @@ export default function Expenses() {
     const { updateActivity } = useUpdateActivity();
     const { deleteActivity } = useDeleteActivity();
     const { totalMoneyLeft, computeTotal } = useComputeTotalMoneyLeft();
+    const [totalUnit, setTotalUnit] = useState<string>('USD');
     const { saveActivity, loading: saving } = useSaveActivity();
-
     const handleRefresh = () => {
         show();
         computeTotal();
@@ -32,6 +32,27 @@ export default function Expenses() {
         await deleteActivity(id);
         handleRefresh();
     }
+
+    const displayTotal = () => {
+    if (totalMoneyLeft === null) return "0";
+
+    const fromMGARates: Record<string, number> = {
+        'MGA': 1,
+        'MGF': 5,
+        'EUR': 1 / 4850.50,
+        'USD': 1 / 4500.00
+    };
+
+    const rate = fromMGARates[totalUnit] || 1;
+    const finalValue = totalMoneyLeft * rate;
+
+    const decimals = (totalUnit === 'MGA' || totalUnit === 'MGF') ? 0 : 2;
+
+    return finalValue.toLocaleString('fr-MG', { 
+        minimumFractionDigits: decimals, 
+        maximumFractionDigits: decimals 
+    });
+};
 
     useEffect(() => { handleRefresh(); }, []);
     console.log(activities);
@@ -68,7 +89,22 @@ export default function Expenses() {
                                     <input name='date' type="date" defaultValue={activity.getDate() ? new Date(activity.getDate()!).toISOString().split('T')[0] : ''} placeholder="Date" className='w-full bg-gray-50 border border-gray-200 text-gray-800 p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
                                 </td>
                                 <td>
-                                    <p className={`w-full bg-gray-50 border border-gray-200 ${(activity.getMoneyIn()||0)-(activity.getMoneyOut()||0) < 0 ? 'text-red-700' : 'text-green-700'} p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400`}>{(activity.getMoneyIn()||0)-(activity.getMoneyOut()||0)}</p>
+                                    <div className='w-full bg-gray-50 border border-gray-200 flex flex-row justify-between'>
+                                        <p className={`${(activity.getMoneyIn()||0)-(activity.getMoneyOut()||0) < 0 ? 'text-red-700' : 'text-green-700'} p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400`}>{(activity.getMoneyIn()||0)-(activity.getMoneyOut()||0)}</p>
+                                    <select 
+                                    key={`select-${activity.getId()}-${activity.getCurrency()}`}
+                                    name="currency" 
+                                    id={`currency-${activity.getId()}`}
+                                    defaultValue={activity.getCurrency()?.toString().trim().toUpperCase() || 'USD'}
+                                    aria-label="Select currency unit"
+                                    >
+                                        <option value="MGA">Ar</option>
+                                        <option value="MGF">Fmg</option>
+                                        <option value="USD">$</option>
+                                        <option value="EUR">€</option>
+                                    </select>
+                                    </div>
+                                    
                                 </td>
                                 <td>
                                     <div className='w-full flex flex-row gap-1 justify-between'>
@@ -78,11 +114,14 @@ export default function Expenses() {
                                         const moneyIn = parseFloat((row?.querySelector('input[name="moneyIn"]') as HTMLInputElement).value);
                                         const moneyOut = parseFloat((row?.querySelector('input[name="moneyOut"]') as HTMLInputElement).value);
                                         const date = (row?.querySelector('input[name="date"]') as HTMLInputElement).value;
+                                        const currencySelect = row?.querySelector(`select[name="currency"]`) as HTMLSelectElement;
+                                        const currency = currencySelect ? currencySelect.value.toUpperCase() : 'MGA'
                                         const updatedActivity = new Activity(
                                             name,
                                             moneyIn,
                                             moneyOut,
                                             date ? new Date(date) : new Date(),
+                                            currency,
                                             activity.getId()
                                             );
                                             handleActivityUpdate(updatedActivity);
@@ -106,9 +145,32 @@ export default function Expenses() {
         height='h-1/6'
         >
             <div className='flex flex-col items-center gap-4 w-full h-full justify-center'>
-                <div className='flex flex-row gap-4 items-center justify-center'>
-                <p className='text-gray-700 font-medium'>Total Money Left: </p>
-                <p className='text-4xl font-bold text-gray-950'>{totalMoneyLeft !== null ? totalMoneyLeft : 0}</p>
+                <div className='flex flex-row  items-center justify-center gap-1'>
+                <p className=' text-gray-700 font-medium'>Total Money Left</p>
+                <div className={` bg-gray-50 border border-gray-200 flex flex-row p-1`}>
+                <div className='w-full'>
+                    <p className='text-4xl font-bold text-gray-950'>
+                        {displayTotal()}
+                    </p>  
+                </div>
+                <select 
+                name="currency"
+                id="currency-total"
+                aria-label="Select currency unit"
+                className='ml-1'
+                onChange={(e) => {
+                    const newUnit = e.target.value;
+                    setTotalUnit(newUnit);
+                    handleRefresh();
+                }}
+                >
+                <option value="MGA">Ar</option>
+                <option value="MGF">Fmg</option>
+                <option value="USD">$</option>
+                <option value="EUR">€</option>
+                </select>
+                </div>
+                
             </div>
             <button type='button' onClick={() => handleActivitySave()} className="w-1/4 h-1/4 border-2 border-purple-600 bg-purple-600 text-white font-bold hover:bg-purple-700">Add</button>
             </div>

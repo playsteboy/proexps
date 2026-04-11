@@ -19,14 +19,24 @@ class ActivityService {
         return await this.activityRepository.deleteActivity(activityId);
     }
     async computeTotalMoneyLeft(): Promise<number> {
-        const activities = await this.getActivities();
-        return activities.reduce((total, activity) => {
-            const moneyIn = activity.getMoneyIn() || 0;
-            const moneyOut = activity.getMoneyOut() || 0;
-            return total + moneyIn - moneyOut;
-        }
-        , 0);
-    }
+    const activities = await this.getActivities();
+    const ratesToMGA: Record<string, number> = {
+        'MGA': 1,
+        'MGF': 0.2, 
+        'EUR': 4850.50,
+        'USD': 4500.00 
+    };
+
+
+    const totalInMGA = activities.reduce((total, activity) => {
+        const currency = activity.getCurrency()?.toUpperCase() || 'MGA';
+        const rate = ratesToMGA[currency] || 1;
+        const balance = (activity.getMoneyIn() || 0) - (activity.getMoneyOut() || 0);
+        return total + Math.round(balance * rate);
+    }, 0);
+
+    return totalInMGA;
+}
         
 }
 const activityRepository = new ActivityRepository();

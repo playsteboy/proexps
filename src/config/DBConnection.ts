@@ -10,7 +10,8 @@ export async function initializeDatabase() {
     name TEXT,
     money_in REAL DEFAULT 0.0,
     money_out REAL DEFAULT 0.0,
-    date TEXT DEFAULT (datetime('now', 'localtime'))
+    date TEXT DEFAULT (datetime('now', 'localtime')),
+    currency TEXT DEFAULT 'MGA'
   )`);
 
   await db.close();

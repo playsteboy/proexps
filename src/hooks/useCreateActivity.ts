@@ -11,7 +11,8 @@ export default function useSaveActivity() {
             "",
             0,
             0,
-            new Date()
+            new Date(),
+            "MGA"
         );
         setLoading(true);
         try {
