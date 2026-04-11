@@ -17,7 +17,7 @@ async getActivities(): Promise<Activity[]> {
             row.money_in||0,
             row.money_out||0,
             new Date(row.date),
-            row.currency||'USD',
+            row.currency||'MGA',
             row.id
             ));
     }catch(error){

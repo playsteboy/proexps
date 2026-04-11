@@ -11,7 +11,7 @@ export default function Expenses() {
     const { updateActivity } = useUpdateActivity();
     const { deleteActivity } = useDeleteActivity();
     const { totalMoneyLeft, computeTotal } = useComputeTotalMoneyLeft();
-    const [totalUnit, setTotalUnit] = useState<string>('USD');
+    const [totalUnit, setTotalUnit] = useState<string>('MGA');
     const { saveActivity, loading: saving } = useSaveActivity();
     const handleRefresh = () => {
         show();
@@ -58,12 +58,12 @@ export default function Expenses() {
     console.log(activities);
     return (
     <div className='flex flex-col bg-white items-center gap-4 w-full h-full position-relative justify-evenly text-gray-900'>
-        <section className='w-full mt-10 flex flex-col items-center gap-5 justify-center'>
+        <section className='w-full h-full mt-[5%] flex flex-col items-center gap-5 justify-center'>
             <h1 className='text-2xl font-bold text-purple-800'>Here You Can Manage Your Expenses</h1>
-        <div className='flex flex-col items-center gap-4 w-full'>
-            <table className='table-auto border-separate border-spacing-x-2 border-spacing-y-1 w-full justify-between items-center'>
+        <div className='flex flex-col items-center gap-4 w-full h-full'>
+            <table className='table-auto border-separate border-spacing-x-2 border-spacing-y-1 w-full h-full justify-between items-center'>
                 <thead>
-                    <tr className='bg-purple-50 text-purple-900 font-semibold text-sm w-full'> 
+                    <tr className='bg-purple-50 text-purple-900 font-semibold text-sm w-full h-full'> 
                         <th className='w-1/6'>Name</th>
                         <th className='w-1/6'>Money In</th>
                         <th className='w-1/6'>Money Out</th>
@@ -73,9 +73,9 @@ export default function Expenses() {
                     </tr>
                 </thead>
                 {loading ? <p>Loading...</p> : (
-                    <tbody className="gap-2 w-full">
+                    <tbody className="w-full h-full">
                         {activities.map((activity:Activity) => (
-                            <tr key={activity.getId()} className="justify-between items-center w-1/6">
+                            <tr key={activity.getId()} className="justify-between items-center w-1/6 h-full">
                                 <td>
                                     <input name='name' type="text" defaultValue={activity.getName()} placeholder="Name" className='w-full  bg-gray-50 border border-gray-200 text-gray-800 p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
                                 </td>
@@ -95,7 +95,7 @@ export default function Expenses() {
                                     key={`select-${activity.getId()}-${activity.getCurrency()}`}
                                     name="currency" 
                                     id={`currency-${activity.getId()}`}
-                                    defaultValue={activity.getCurrency()?.toString().trim().toUpperCase() || 'USD'}
+                                    defaultValue={activity.getCurrency()?.toString().trim().toUpperCase() || 'MGA'}
                                     aria-label="Select currency unit"
                                     >
                                         <option value="MGA">Ar</option>
@@ -107,7 +107,7 @@ export default function Expenses() {
                                     
                                 </td>
                                 <td>
-                                    <div className='w-full flex flex-row gap-1 justify-between'>
+                                    <div className='w-full h-full flex flex-row gap-[2%] justify-between items-center'>
                                         <button type='button' onClick={(e) => {
                                             const row = e.currentTarget.closest('tr');
                                             const name = (row?.querySelector('input[name="name"]') as HTMLInputElement).value;
@@ -126,10 +126,10 @@ export default function Expenses() {
                                             );
                                             handleActivityUpdate(updatedActivity);
                                         }}
-                                        className='w-1/2 text-blue-600 bg-blue-100 font-medium px-4 py-1.5 rounded-full hover:bg-blue-200 transition'>
+                                        className='w-1/2 h-[75%] text-blue-600 bg-blue-100 font-medium text-center justify-center rounded-full hover:bg-blue-200 transition'>
                                             Edit</button>
                                     <button type='button' onClick={() => {handleActivityDelete((activity.getId()||-1));}}
-                                        className='w-1/2 text-pink-600 bg-pink-100 font-medium px-4 py-1.5 rounded-full hover:bg-pink-200 transition'>Delete</button>
+                                        className='w-1/2 h-[75%] text-pink-600 bg-pink-100 font-medium text-center justify-center rounded-full hover:bg-pink-200 transition'>Delete</button>
                                     </div>
                                 </td>
                             </tr>
@@ -144,11 +144,11 @@ export default function Expenses() {
         width='w-full'
         height='h-1/6'
         >
-            <div className='flex flex-col items-center gap-4 w-full h-full justify-center'>
-                <div className='flex flex-row  items-center justify-center gap-1'>
+            <div className='flex flex-col items-center gap-[9%] w-full h-full justify-center'>
+                <div className='flex flex-col  items-center justify-center gap-[1%]'>
                 <p className=' text-gray-700 font-medium'>Total Money Left</p>
-                <div className={` bg-gray-50 border border-gray-200 flex flex-row p-1`}>
-                <div className='w-full'>
+                <div className={` bg-gray-50 border rounded-sm border-gray-200 flex flex-row justify-around items-center pl-[5%] pr-[5%]`}>
+                <div className='w-full '>
                     <p className='text-4xl font-bold text-gray-950'>
                         {displayTotal()}
                     </p>  
@@ -157,7 +157,8 @@ export default function Expenses() {
                 name="currency"
                 id="currency-total"
                 aria-label="Select currency unit"
-                className='ml-1'
+                defaultValue='MGA'
+                className='ml-[2%]'
                 onChange={(e) => {
                     const newUnit = e.target.value;
                     setTotalUnit(newUnit);
