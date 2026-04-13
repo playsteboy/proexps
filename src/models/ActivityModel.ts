@@ -1,12 +1,12 @@
 export default class ActivityModel {
     private id?:number;
     private name?:string;
-    private moneyIn?:number;
-    private moneyOut?:number;
+    private moneyIn?:any;
+    private moneyOut?:any;
     private date?:Date;
     private currency?:string;
 
-    constructor(name:string, moneyIn:number, moneyOut:number, date:Date, currency:string, id?:number) {
+    constructor(name:string, moneyIn:any, moneyOut:any, date:Date, currency:string, id?:number) {
         this.name = name;
         this.moneyIn = moneyIn;
         this.moneyOut = moneyOut;

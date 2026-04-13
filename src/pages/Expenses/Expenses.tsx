@@ -1,11 +1,13 @@
 import Footer from '../../components/Layout/Footer'
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useShowActivity from '../../hooks/useShowActivity';
 import useUpdateActivity from '../../hooks/useUpdateActivity';
 import Activity from '../../models/ActivityModel';
 import useDeleteActivity from '../../hooks/useDeleteActivity';
 import useComputeTotalMoneyLeft from '../../hooks/useComputeTotalMoneyLeft';
 import useSaveActivity from '../../hooks/useCreateActivity';
+import SearchBar from '../../components/UI/SearchBar';
+import ActivitySearchModel from '../../models/ActivitySearchModel';
 export default function Expenses() {
      const { show, activities, loading } = useShowActivity();
     const { updateActivity } = useUpdateActivity();
@@ -13,10 +15,14 @@ export default function Expenses() {
     const { totalMoneyLeft, computeTotal } = useComputeTotalMoneyLeft();
     const [totalUnit, setTotalUnit] = useState<string>('MGA');
     const { saveActivity, loading: saving } = useSaveActivity();
-    const handleRefresh = () => {
-        show();
-        computeTotal();
-    }
+    
+    const [searchModel, setSearchModel] = useState<ActivitySearchModel>(new ActivitySearchModel());
+    
+
+    const handleRefresh = useCallback(() => {
+        show(searchModel);
+        computeTotal(searchModel);
+    }, [searchModel]);
 
     const handleActivityUpdate = async (activity: Activity) => {
         await updateActivity(activity);
@@ -54,13 +60,20 @@ export default function Expenses() {
     });
 };
 
-    useEffect(() => { handleRefresh(); }, []);
+    useEffect(() => {
+    handleRefresh();
+}, [searchModel, handleRefresh]);
     console.log(activities);
     return (
     <div className='flex flex-col bg-white items-center gap-4 w-full h-full position-relative justify-evenly text-gray-900'>
-        <section className='w-full h-full mt-[5%] flex flex-col items-center gap-5 justify-center'>
-            <h1 className='text-2xl font-bold text-purple-800'>Here You Can Manage Your Expenses</h1>
-        <div className='flex flex-col items-center gap-4 w-full h-full'>
+        <section className='w-full h-full mt-[5%] flex flex-col items-center gap-2 justify-center'>
+            <div className='flex flex-col w-full h-full item-center justify-center text-center gap-3'>
+                <h1 className='text-2xl font-bold text-purple-800'>Here You Can Manage Your Expenses</h1>
+                <SearchBar searchTerm={searchModel} setSearchTerm={setSearchModel} />
+            </div>
+            
+        <div className='flex flex-col items-center gap-1 w-full h-full'>
+            <h2 className='text-xl font-semibold'>DashBoard</h2>
             <table className='table-auto border-separate border-spacing-x-2 border-spacing-y-1 w-full h-full justify-between items-center'>
                 <thead>
                     <tr className='bg-purple-50 text-purple-900 font-semibold text-sm w-full h-full'> 
@@ -72,25 +85,25 @@ export default function Expenses() {
                         <th className='w-1/6'>Actions</th>
                     </tr>
                 </thead>
-                {loading ? <p>Loading...</p> : (
+                {loading ? <tbody><tr><td colSpan={6} className="text-center">Loading...</td></tr></tbody> : (
                     <tbody className="w-full h-full">
                         {activities.map((activity:Activity) => (
                             <tr key={activity.getId()} className="justify-between items-center w-1/6 h-full">
                                 <td>
-                                    <input name='name' type="text" defaultValue={activity.getName()} placeholder="Name" className='w-full  bg-gray-50 border border-gray-200 text-gray-800 p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
+                                    <input name='name' type="text" defaultValue={activity.getName()} placeholder="Name" className='w-full  bg-gray-50 border border-gray-200 text-gray-800 p-[3%] rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
                                 </td>
                                 <td>
-                                    <input name='moneyIn' type="number" defaultValue={activity.getMoneyIn()} placeholder="Money In" className='w-full bg-gray-50 border border-gray-200 text-gray-800 p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
+                                    <input name='moneyIn' type="number" defaultValue={activity.getMoneyIn()} placeholder="Money In" className='w-full bg-gray-50 border border-gray-200 text-gray-800 p-[3%] rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
                                 </td>
                                 <td>
-                                    <input name='moneyOut' type="number" defaultValue={activity.getMoneyOut()} placeholder="Money Out" className='w-full bg-gray-50 border border-gray-200 text-gray-800 p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
+                                    <input name='moneyOut' type="number" defaultValue={activity.getMoneyOut()} placeholder="Money Out" className='w-full bg-gray-50 border border-gray-200 text-gray-800 p-[3%] rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
                                 </td>
                                 <td>
-                                    <input name='date' type="date" defaultValue={activity.getDate() ? new Date(activity.getDate()!).toISOString().split('T')[0] : ''} placeholder="Date" className='w-full bg-gray-50 border border-gray-200 text-gray-800 p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
+                                    <input name='date' type="date" defaultValue={activity.getDate() ? new Date(activity.getDate()!).toISOString().split('T')[0] : ''} placeholder="Date" className='w-full bg-gray-50 border border-gray-200 text-gray-800 p-[3%] rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400'/>
                                 </td>
                                 <td>
                                     <div className='w-full bg-gray-50 border border-gray-200 flex flex-row justify-between'>
-                                        <p className={`${(activity.getMoneyIn()||0)-(activity.getMoneyOut()||0) < 0 ? 'text-red-700' : 'text-green-700'} p-2 rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400`}>{(activity.getMoneyIn()||0)-(activity.getMoneyOut()||0)}</p>
+                                        <p className={`${(activity.getMoneyIn()||0)-(activity.getMoneyOut()||0) < 0 ? 'text-red-700' : 'text-green-700'} p-[3%] rounded focus:ring-2 focus:ring-purple-300 focus:border-purple-400`}>{(activity.getMoneyIn()||0)-(activity.getMoneyOut()||0)}</p>
                                     <select 
                                     key={`select-${activity.getId()}-${activity.getCurrency()}`}
                                     name="currency" 
