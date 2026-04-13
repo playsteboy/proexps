@@ -39,7 +39,7 @@ export default function SearchBar({
             value={searchTerm.getMoneyOut() ?? ''}
             onChange={(e) => {
     const val = e.target.value === "" ? undefined : Number(e.target.value);
-    handleUpdate(m => m.setMoneyIn(val));
+    handleUpdate(m => m.setMoneyOut(val));
 }}
             className="w-1/6 bg-gray-50 border border-gray-200 text-gray-800 p-[0.75%] rounded text-sm"
         />

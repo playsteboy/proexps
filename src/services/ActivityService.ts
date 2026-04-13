@@ -42,6 +42,10 @@ class ActivityService {
         return await this.activityRepository.addActivity(activity);
     }
     async updateActivity(activity: Activity): Promise<QueryResult> {
+        const name = activity.getName();
+    if (name && name.length > 100) {
+        throw new Error("The name of the activity cannot exceed 100 characters"); 
+    }
         return await this.activityRepository.updateActivity(activity);
     }
     async deleteActivity(activityId: number): Promise<QueryResult> {
